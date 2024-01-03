@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
+using MySqlConnector;
 
 public class Program
 {
@@ -13,9 +14,9 @@ public class Program
         // Add services to the container.
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        builder.Services.AddDbContext<ApplicationDbContext.ApplicationDbContext>(options =>
         {
-            options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), ServerVersion.AutoDetect);
+            options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version(8, 0, 31)));
         });
 
         var app = builder.Build();
@@ -30,6 +31,8 @@ public class Program
         app.UseHttpsRedirection();
 
         app.MapGet("/", () => "Hello World!");
+
+        app.MapPut("/world", () => "World! Hello ");
 
         app.Run();
     }

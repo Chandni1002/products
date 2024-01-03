@@ -1,37 +1,46 @@
-public class ProductRepository : IProductRepository
+// ProductRepository.cs
+using System;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+
+namespace ApplicationDbContext
 {
-    private readonly AppDbContext _context;
-
-    public ProductRepository(AppDbContext context)
+    public class ProductRepository : IProductRepository
     {
-        _context = context;
-    }
+        private readonly ApplicationDbContext _context;
 
-    public void Create(Product product)
-    {
-        _context.Products.Add(product);
-        _context.SaveChanges();
-    }
+        public ProductRepository(ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
-    public void Update(Product product)
-    {
-        _context.Products.Update(product);
-        _context.SaveChanges();
-    }
+        public void Create(Product product)
+        {
+            _context.Products.Add(product);
+            _context.SaveChanges();
+        }
 
-    public List<Product> List()
-    {
-        return _context.Products.ToList();
-    }
+        public void Update(Product product)
+        {
+            _context.Products.Update(product);
+            _context.SaveChanges();
+        }
 
-    public Product GetById(int id)
-    {
-        return _context.Products.Find(id);
-    }
+        public List<Product> List()
+        {
+            return _context.Products.ToList();
+        }
 
-    public void Delete(Product product)
-    {
-        _context.Products.Remove(product);
-        _context.SaveChanges();
+        public Product GetById(int id)
+        {
+            return _context.Products.Find(id);
+        }
+
+        public void Delete(Product product)
+        {
+            _context.Products.Remove(product);
+            _context.SaveChanges();
+        }
     }
 }
