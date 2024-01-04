@@ -1,4 +1,3 @@
-// ProductRepository.cs
 using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

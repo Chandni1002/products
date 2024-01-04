@@ -1,65 +1,56 @@
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ApplicationDbContext;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("products")]
+[EnableCors("AllowAnyOrigin")]
+[ApiExplorerSettings(GroupName = "v1")]
 public class ProductController : ControllerBase
 {
-    private readonly IProductRepository _repository;
+    private readonly IProductRepository _productRepository;
 
-    public ProductController(IProductRepository repository)
+    public ProductController(IProductRepository productRepository)
     {
-        _repository = repository;
-    }
-
-    [HttpPost]
-    public IActionResult CreateProduct(Product product)
-    {
-        _repository.Create(product);
-        return Ok();
-    }
-
-    [HttpPut("{id}")]
-    public IActionResult UpdateProduct(int id, Product product)
-    {
-        var existingProduct = _repository.GetById(id);
-        if (existingProduct == null)
-            return NotFound();
-
-        existingProduct.ProductName = product.ProductName;
-        existingProduct.Categories = product.Categories;
-        existingProduct.Cost = product.Cost;
-        existingProduct.Description = product.Description;
-        existingProduct.IsActive = product.IsActive;
-
-        _repository.Update(existingProduct);
-        return Ok();
+        _productRepository = productRepository;
     }
 
     [HttpGet]
-    public IActionResult GetProducts()
+    public ActionResult<IEnumerable<Product>> GetAllProducts()
     {
-        var products = _repository.List();
+        var products = _productRepository.List();
         return Ok(products);
     }
 
-    [HttpGet("{id}")]
-    public IActionResult GetProductById(int id)
+    [HttpGet("{productId}")]
+    public ActionResult<Product> GetProductById(int productId)
     {
-        var product = _repository.GetById(id);
+        var product = _productRepository.GetById(productId);
         if (product == null)
+        {
             return NotFound();
-
+        }
         return Ok(product);
     }
 
-    [HttpDelete("{id}")]
-    public IActionResult DeleteProduct(int id)
+    [HttpPost("create")]
+    public IActionResult CreateProduct([FromBody] Product product)
     {
-        var product = _repository.GetById(id);
         if (product == null)
-            return NotFound();
+        {
+            return BadRequest("Invalid product data");
+        }
 
-        _repository.Delete(product);
-        return Ok();
+        try
+        {
+            _productRepository.Create(product);
+            return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+        }
+        catch (DbUpdateException ex)
+        {
+            return StatusCode(500, $"Internal Server Error: {ex.Message}");
+        }
     }
+
 }

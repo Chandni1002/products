@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
 public interface IProductRepository
 {
     void Create(Product product);

@@ -1,3 +1,4 @@
+//IProductCategoryRepository.cs
 public interface IProductCategoryRepository
 {
     void Create(ProductCategory category);
